@@ -10,6 +10,7 @@ import az.code.touragent.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class RequestServiceImpl implements RequestService{
@@ -34,11 +35,25 @@ public class RequestServiceImpl implements RequestService{
             if (!request.getExpired()) {
                 users.forEach(user -> agentRequest.toBuilder()
                         .userEmail(user.getEmail())
-                        .requestId(request.getId())
+                        .requestId(request.getRequestId())
                         .status(RequestStatus.UNSEEN)
                         .build());
                 agentRequestsRepo.save(agentRequest);
             }
         });
+    }
+
+    @Override
+    public Request getRequest(UUID requestId) {
+        Request request = requestRepo.getById(requestId);
+        if (!request.getExpired()){
+            return request;
+        }
+        return null;
+    }
+
+    @Override
+    public List<Request> getAllRequests() {
+        return requestRepo.getNotExpiredRequests();
     }
 }

@@ -11,11 +11,13 @@ import lombok.*;
 public class UserDto {
     private String fullName;
     private String email;
+    private String companyName;
     private String voen;
 
     public UserDto(User data) {
         this.fullName = data.getFirstName() + " " + data.getLastName();
         this.email = data.getEmail();
+        this.companyName = data.getCompanyName();
         this.voen = data.getVoen();
     }
 }

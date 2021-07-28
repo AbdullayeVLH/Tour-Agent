@@ -4,6 +4,7 @@ import az.code.touragent.enums.RequestStatus;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -19,6 +20,6 @@ public class AgentRequests {
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
     private String userEmail;
-    private Long requestId;
+    private UUID requestId;
 
 }

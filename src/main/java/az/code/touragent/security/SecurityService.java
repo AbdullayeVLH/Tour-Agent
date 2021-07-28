@@ -4,12 +4,13 @@ import az.code.touragent.dtos.LoginDto;
 import az.code.touragent.dtos.LoginResponseDto;
 import az.code.touragent.dtos.RegisterDto;
 import az.code.touragent.dtos.RegisterResponseDto;
+import org.keycloak.representations.AccessTokenResponse;
 
 import javax.security.auth.login.LoginException;
 
 public interface SecurityService {
 
-    LoginResponseDto login(LoginDto user) throws LoginException;
+    AccessTokenResponse login(LoginDto user) throws LoginException;
 
     RegisterResponseDto register(RegisterDto register);
 

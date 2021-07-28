@@ -4,11 +4,17 @@ import az.code.touragent.dtos.UserData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Base64;
 
+//@Configuration
 public class Util {
     public static UserData convertToken(String auth) throws JsonProcessingException {
         UserData user = new UserData();
@@ -28,4 +34,15 @@ public class Util {
                         ZoneOffset.ofHours(4)));
         return user;
     }
+
+//    @Bean
+//    public Keycloak keycloakClient(){
+//        return KeycloakBuilder.builder()
+//                .serverUrl("http://localhost:8080/auth")
+//                .realm("Tour")
+//                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+//                .clientId("tour-agent")
+//                .clientSecret("dac3b0ea-5d48-4307-8ea9-ba007fde0f7d")
+//                .build();
+//    }
 }

@@ -3,6 +3,7 @@ package az.code.touragent.models;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,5 +19,5 @@ public class Offer {
     private String price;
     private String dateInterval;
     private String tourInformation;
-    private Long requestId;
+    private UUID requestId;
 }

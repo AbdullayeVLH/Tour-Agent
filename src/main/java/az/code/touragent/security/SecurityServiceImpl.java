@@ -29,6 +29,7 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.LoginException;
@@ -44,13 +45,13 @@ public class SecurityServiceImpl implements SecurityService {
     private String realm;
     @Value("${keycloak.resource}")
     private String clientId;
-    @Value("${keycloak.resource}")
-    private final String role = "tour-agent";
+//    @Value("${keycloak.resource}")
+    private final String role = "app-user";
     @Value("${keycloak.credentials.secret}")
     private String clientSecret;
-    @Value("${keycloak.username}")
+    @Value("${app.keycloak.username}")
     private String adminUsername;
-    @Value("${keycloak.password}")
+    @Value("${app.keycloak.password}")
     private String adminPassword;
     @Value("${mail.auth.verification.subject}")
     private String verificationSubject;
@@ -63,14 +64,30 @@ public class SecurityServiceImpl implements SecurityService {
     VerificationRepository verificationRepo;
     UserRepository userRepo;
 
-    public SecurityServiceImpl(MailUtil mailUtil, VerificationRepository verificationRepo, UserRepository userRepo) {
+//    private final Keycloak keycloakClient;
+
+//    @Bean
+//    public Keycloak keycloakClient(){
+//        return KeycloakBuilder.builder()
+//                .serverUrl(authServerUrl)
+//                .realm(realm)
+//                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+//                .clientId(clientId)
+//                .clientSecret(clientSecret)
+//                .build();
+//    }
+
+    public SecurityServiceImpl(MailUtil mailUtil,
+                               VerificationRepository verificationRepo,
+                               UserRepository userRepo) {
         this.mailUtil = mailUtil;
         this.verificationRepo = verificationRepo;
         this.userRepo = userRepo;
+//        this.keycloakClient = keycloakClient;
     }
 
     @Override
-    public LoginResponseDto login(LoginDto user) throws LoginException {
+    public AccessTokenResponse login(LoginDto user) throws LoginException {
         Map<String, Object> clientCredentials = new HashMap<>();
         clientCredentials.put("secret", clientSecret);
         clientCredentials.put("grant_type", "password");
@@ -80,9 +97,10 @@ public class SecurityServiceImpl implements SecurityService {
         try {
             AccessTokenResponse response =
                     authzClient.obtainAccessToken(user.getEmail(), user.getPassword());
-            Util.convertToken(response.getToken());
-            return LoginResponseDto.builder().token(response.getToken()).build();
-        } catch (HttpResponseException | JsonProcessingException exception) {
+            return response;
+//            Util.convertToken(response.getToken());
+//            return LoginResponseDto.builder().token(response.getToken()).build();
+        } catch (HttpResponseException e) {
             throw new LoginException();
         }
     }
@@ -90,6 +108,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public RegisterResponseDto register(RegisterDto register) {
         Keycloak keycloak = getRealmCli();
+//         keycloakClient.realm(realm);
         UserRepresentation user = createUser(register);
         RealmResource realmResource = keycloak.realm(realm);
         UsersResource usersResource = realmResource.users();
@@ -126,7 +145,7 @@ public class SecurityServiceImpl implements SecurityService {
 
     private Keycloak getRealmCli() {
         return KeycloakBuilder.builder().serverUrl(authServerUrl)
-                .grantType(OAuth2Constants.PASSWORD).realm(realm).clientId(clientId)
+                .grantType(OAuth2Constants.PASSWORD).realm("master").clientId("admin-cli")
                 .username(adminUsername).password(adminPassword)
                 .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
     }
@@ -137,7 +156,8 @@ public class SecurityServiceImpl implements SecurityService {
         user.setEmail(register.getEmail());
         user.setFirstName(register.getFirstName());
         user.setLastName(register.getLastName());
-//        user.setVoen(register.getVoen());
+        user.setAttributes(Collections.singletonMap("companyName", Collections.singletonList(register.getCompanyName())));
+        user.setAttributes(Collections.singletonMap("voen", Collections.singletonList(register.getVoen())));
         return user;
     }
 
@@ -161,5 +181,7 @@ public class SecurityServiceImpl implements SecurityService {
         mailUtil.sendNotificationEmail(register.getEmail(), verificationSubject,
                 verificationContext.formatted(verificationUrl.formatted(token, register.getEmail())));
     }
+
+
 }
 
