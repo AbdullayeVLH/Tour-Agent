@@ -1,6 +1,8 @@
 package az.code.touragent.services;
 
 import az.code.touragent.enums.RequestStatus;
+import az.code.touragent.exceptions.AlreadyOffered;
+import az.code.touragent.exceptions.RequestExpired;
 import az.code.touragent.models.AgentRequests;
 import az.code.touragent.models.Offer;
 import az.code.touragent.models.Request;
@@ -29,31 +31,31 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public Offer makeOffer(String price, String dateInterval, String tourInformation, UUID requestId) {
-        Request request = requestRepo.findById(requestId).get();
-        AgentRequests agentRequest = agentRequestsRepo.getAgentRequestsByRequestId(request.getRequestId());
-
-        if (agentRequest != null) {
-            if (!agentRequest.getStatus().equals("OFFERED")) {
-                if (!request.getExpired()) {
-                    Offer requestOffer = Offer.builder().requestId(request.getRequestId())
-                            .price(price)
-                            .dateInterval(dateInterval)
-                            .tourInformation(tourInformation)
-                            .build();
-                    offerRepo.save(requestOffer);
-                    agentRequest.setStatus(RequestStatus.OFFERED);
-                    mqService.sendToQueue(requestOffer);
-                    return requestOffer;
-                }
+    public Offer makeOffer(String price, String dateInterval, String tourInformation, UUID requestId, String email) {
+        Request request = requestRepo.getRequestByRequestId(requestId);
+        AgentRequests agentRequest = agentRequestsRepo.getAgentRequestsByRequestIdAndUserEmail(request.getRequestId(), email);
+        if (!agentRequest.getStatus().equals(RequestStatus.OFFERED) && !agentRequest.getStatus().equals(RequestStatus.DELETED)) {
+            Boolean isExpired = request.getExpired();
+            if (!isExpired) {
+                Offer requestOffer = Offer.builder().requestId(request.getRequestId())
+                        .price(price)
+                        .dateInterval(dateInterval)
+                        .tourInformation(tourInformation)
+                        .build();
+                offerRepo.save(requestOffer);
+                agentRequest.setStatus(RequestStatus.OFFERED);
+                agentRequestsRepo.save(agentRequest);
+//                mqService.sendToOfferQueue(requestOffer);
+                return requestOffer;
             }
+            throw new RequestExpired();
         }
-        return null;
+        throw new AlreadyOffered();
     }
 
     @Override
     public Offer getOffer(Long offerId) {
-        return offerRepo.findById(offerId).get();
+        return offerRepo.getById(offerId);
     }
 
     @Override

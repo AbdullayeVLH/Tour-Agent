@@ -11,4 +11,6 @@ public interface RequestRepository extends JpaRepository<Request, UUID> {
     @Query("SELECT request FROM Request request " +
             "WHERE request.expired=false ")
     List<Request> getNotExpiredRequests();
+
+    Request getRequestByRequestId(UUID requestId);
 }

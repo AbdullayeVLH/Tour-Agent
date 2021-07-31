@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface OfferService {
 
-    Offer makeOffer(String price, String dateInterval, String tourInformation, UUID requestId);
+    Offer makeOffer(String price, String dateInterval, String tourInformation, UUID requestId, String email);
 
     Offer getOffer(Long offerId);
 

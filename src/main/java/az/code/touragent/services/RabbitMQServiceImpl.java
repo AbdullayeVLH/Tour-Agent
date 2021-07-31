@@ -15,7 +15,9 @@ public class RabbitMQServiceImpl implements RabbitMQService{
 
 
     @Override
-    public void sendToQueue(Offer offer) {
-        template.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, offer);
+    public void sendToOfferQueue(Offer offer) {
+        template.convertAndSend(RabbitMQConfig.OFFER_QUEUE, offer);
     }
+
+
 }

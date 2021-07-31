@@ -2,6 +2,7 @@ package az.code.touragent.models;
 
 import az.code.touragent.enums.RequestStatus;
 import lombok.*;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @Entity
 @Table(name = "agentRequests")
+@Proxy(lazy = false)
 public class AgentRequests {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
