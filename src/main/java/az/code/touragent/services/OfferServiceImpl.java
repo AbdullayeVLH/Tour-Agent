@@ -1,5 +1,6 @@
 package az.code.touragent.services;
 
+import az.code.touragent.dtos.MakeOfferDto;
 import az.code.touragent.enums.RequestStatus;
 import az.code.touragent.exceptions.AlreadyOffered;
 import az.code.touragent.exceptions.RequestExpired;
@@ -31,16 +32,16 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public Offer makeOffer(String price, String dateInterval, String tourInformation, UUID requestId, String email) {
+    public Offer makeOffer(MakeOfferDto dto, UUID requestId, String email) {
         Request request = requestRepo.getRequestByRequestId(requestId);
         AgentRequests agentRequest = agentRequestsRepo.getAgentRequestsByRequestIdAndUserEmail(request.getRequestId(), email);
         if (!agentRequest.getStatus().equals(RequestStatus.OFFERED) && !agentRequest.getStatus().equals(RequestStatus.DELETED)) {
             Boolean isExpired = request.getExpired();
             if (!isExpired) {
                 Offer requestOffer = Offer.builder().requestId(request.getRequestId())
-                        .price(price)
-                        .dateInterval(dateInterval)
-                        .tourInformation(tourInformation)
+                        .price(dto.getPrice())
+                        .dateInterval(dto.getDateInterval())
+                        .tourInformation(dto.getTourInformation())
                         .build();
                 offerRepo.save(requestOffer);
                 agentRequest.setStatus(RequestStatus.OFFERED);

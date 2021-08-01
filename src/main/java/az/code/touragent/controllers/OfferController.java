@@ -1,5 +1,6 @@
 package az.code.touragent.controllers;
 
+import az.code.touragent.dtos.MakeOfferDto;
 import az.code.touragent.dtos.UserData;
 import az.code.touragent.exceptions.AlreadyOffered;
 import az.code.touragent.exceptions.RequestExpired;
@@ -34,19 +35,19 @@ public class OfferController {
     }
 
     @PostMapping("/make/{requestId}")
-    public ResponseEntity<Offer> makeOffer(@RequestBody String price, String dateInterval, String tourInformation,
-                                       @PathVariable UUID requestId,
-                                       @RequestAttribute("user")UserData user) {
-        return ResponseEntity.ok(offerService.makeOffer(price, dateInterval, tourInformation, requestId, user.getEmail()));
+    public ResponseEntity<Offer> makeOffer(@RequestBody MakeOfferDto dto,
+                                           @PathVariable UUID requestId,
+                                           @RequestAttribute("user") UserData user) {
+        return ResponseEntity.ok(offerService.makeOffer(dto, requestId, user.getEmail()));
     }
 
     @GetMapping("/{offerId}")
-    public ResponseEntity<Offer> getOffer(@PathVariable Long offerId){
+    public ResponseEntity<Offer> getOffer(@PathVariable Long offerId) {
         return ResponseEntity.ok(offerService.getOffer(offerId));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Offer>> getAllOffers(){
+    public ResponseEntity<List<Offer>> getAllOffers() {
         return ResponseEntity.ok(offerService.getAllOffers());
     }
 }
