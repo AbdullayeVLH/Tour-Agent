@@ -10,8 +10,10 @@ import az.code.touragent.models.Request;
 import az.code.touragent.repositories.AgentRequestsRepository;
 import az.code.touragent.repositories.OfferRepository;
 import az.code.touragent.repositories.RequestRepository;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,18 +23,18 @@ public class OfferServiceImpl implements OfferService {
     private final OfferRepository offerRepo;
     private final RequestRepository requestRepo;
     private final AgentRequestsRepository agentRequestsRepo;
-    private final RabbitMQService mqService;
+    private final ImageService service;
 
     public OfferServiceImpl(OfferRepository offerRepo, RequestRepository requestRepo,
-                            AgentRequestsRepository agentRequestsRepo, RabbitMQService mqService) {
+                            AgentRequestsRepository agentRequestsRepo, ImageService service) {
         this.offerRepo = offerRepo;
         this.requestRepo = requestRepo;
         this.agentRequestsRepo = agentRequestsRepo;
-        this.mqService = mqService;
+        this.service = service;
     }
 
     @Override
-    public Offer makeOffer(MakeOfferDto dto, UUID requestId, String email) {
+    public Offer makeOffer(MakeOfferDto dto, UUID requestId, String email) throws JRException, IOException {
         Request request = requestRepo.getRequestByRequestId(requestId);
         AgentRequests agentRequest = agentRequestsRepo.getAgentRequestsByRequestIdAndUserEmail(request.getRequestId(), email);
         if (!agentRequest.getStatus().equals(RequestStatus.OFFERED) && !agentRequest.getStatus().equals(RequestStatus.DELETED)) {
@@ -44,9 +46,10 @@ public class OfferServiceImpl implements OfferService {
                         .tourInformation(dto.getTourInformation())
                         .build();
                 offerRepo.save(requestOffer);
+                service.convertOfferToImage(requestOffer, email);
+                service.extractBytes(requestOffer, email);
                 agentRequest.setStatus(RequestStatus.OFFERED);
                 agentRequestsRepo.save(agentRequest);
-//                mqService.sendToOfferQueue(requestOffer);
                 return requestOffer;
             }
             throw new RequestExpired();

@@ -6,11 +6,14 @@ import az.code.touragent.exceptions.AlreadyOffered;
 import az.code.touragent.exceptions.RequestExpired;
 import az.code.touragent.models.Offer;
 import az.code.touragent.services.OfferService;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +40,7 @@ public class OfferController {
     @PostMapping("/make/{requestId}")
     public ResponseEntity<Offer> makeOffer(@RequestBody MakeOfferDto dto,
                                            @PathVariable UUID requestId,
-                                           @RequestAttribute("user") UserData user) {
+                                           @RequestAttribute("user") UserData user) throws JRException, IOException {
         return ResponseEntity.ok(offerService.makeOffer(dto, requestId, user.getEmail()));
     }
 

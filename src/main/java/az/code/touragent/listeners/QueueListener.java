@@ -1,8 +1,7 @@
-package az.code.touragent.listener;
+package az.code.touragent.listeners;
 
 import az.code.touragent.configs.RabbitMQConfig;
 import az.code.touragent.enums.RequestStatus;
-import az.code.touragent.models.AgentRequests;
 import az.code.touragent.models.Request;
 import az.code.touragent.models.Session;
 import az.code.touragent.repositories.AgentRequestsRepository;
@@ -11,7 +10,6 @@ import az.code.touragent.services.RequestService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 
 @Component
 public class QueueListener {
@@ -41,15 +39,4 @@ public class QueueListener {
         }
         requestService.makeAgentRequests();
     }
-
-//    @RabbitListener(queues = RabbitMQConfig.STOP_QUEUE)
-//    public void stopRequestListener(Session session) {
-//        Request stopRequest = requestRepo.getById(session.getSessionId());
-//        stopRequest.setExpired(true);
-//        stopRequest.setStatus(RequestStatus.DELETED);
-//        requestRepo.save(stopRequest);
-//        List<AgentRequests> agentRequests = agentRequestsRepo.getAgentRequestsByRequestId(session.getSessionId());
-//        agentRequests.forEach(agentRequest -> agentRequest.setStatus(RequestStatus.DELETED));
-//        agentRequestsRepo.saveAll(agentRequests);
-//    }
 }

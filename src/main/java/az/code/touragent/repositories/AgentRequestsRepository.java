@@ -13,4 +13,5 @@ public interface AgentRequestsRepository extends JpaRepository<AgentRequests, Lo
     List<AgentRequests> getAgentRequestsByUserEmail(String email);
 
     List<AgentRequests> getAgentRequestsByRequestId(UUID requestId);
+
 }
