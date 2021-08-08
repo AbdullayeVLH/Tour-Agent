@@ -21,5 +21,6 @@ public class Offer {
     private String price;
     private String dateInterval;
     private String tourInformation;
+    private String userEmail;
     private UUID requestId;
 }

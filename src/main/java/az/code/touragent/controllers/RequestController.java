@@ -2,6 +2,7 @@ package az.code.touragent.controllers;
 
 import az.code.touragent.dtos.UserData;
 import az.code.touragent.exceptions.AlreadyArchived;
+import az.code.touragent.exceptions.DeleteException;
 import az.code.touragent.exceptions.RequestExpired;
 import az.code.touragent.models.Request;
 import az.code.touragent.services.RequestService;
@@ -31,33 +32,38 @@ public class RequestController {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DeleteException.class)
+    public ResponseEntity<String> handleNotFound(DeleteException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @GetMapping("/{requestId}")
-    public ResponseEntity<Request> getRequest(@PathVariable UUID requestId, @RequestAttribute("user") UserData user){
+    public ResponseEntity<Request> getRequest(@PathVariable UUID requestId, @RequestAttribute("user") UserData user) {
         return ResponseEntity.ok(requestService.getRequest(requestId, user.getEmail()));
     }
 
     @GetMapping("/offered")
-    public ResponseEntity<List<Request>> getOfferedRequests(@RequestAttribute("user") UserData user){
+    public ResponseEntity<List<Request>> getOfferedRequests(@RequestAttribute("user") UserData user) {
         return ResponseEntity.ok(requestService.getOfferedRequests(user.getEmail()));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Request>> getAllRequests(@RequestAttribute("user")UserData user){
+    public ResponseEntity<List<Request>> getAllRequests(@RequestAttribute("user") UserData user) {
         return ResponseEntity.ok(requestService.getAllRequests(user.getEmail()));
     }
 
     @DeleteMapping("/delete/{requestId}")
-    public ResponseEntity deleteRequest(@RequestAttribute("user")UserData user, @PathVariable UUID requestId){
+    public ResponseEntity deleteRequest(@RequestAttribute("user") UserData user, @PathVariable UUID requestId) {
         return ResponseEntity.ok(requestService.deleteRequest(requestId, user.getEmail()));
     }
 
     @PostMapping("/archive/{requestId}")
-    public ResponseEntity sendToArchive(@RequestAttribute("user")UserData user, @PathVariable UUID requestId){
+    public ResponseEntity sendToArchive(@RequestAttribute("user") UserData user, @PathVariable UUID requestId) {
         return ResponseEntity.ok(requestService.sendToArchive(requestId, user.getEmail()));
     }
 
     @GetMapping("/archives")
-    public ResponseEntity<List<Request>> getArchivedRequests(@RequestAttribute("user")UserData user){
+    public ResponseEntity<List<Request>> getArchivedRequests(@RequestAttribute("user") UserData user) {
         return ResponseEntity.ok(requestService.getArchiveRequests(user.getEmail()));
     }
 }

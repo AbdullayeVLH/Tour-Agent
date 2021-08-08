@@ -1,6 +1,7 @@
 package az.code.touragent.services;
 
 import az.code.touragent.configs.RabbitMQConfig;
+import az.code.touragent.models.Offer;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class RabbitMQServiceImpl implements RabbitMQService{
 
 
     @Override
-    public void sendToOfferQueue(byte[] offer) {
+    public void sendToOfferQueue(Offer offer) {
         template.convertAndSend(RabbitMQConfig.OFFER_QUEUE, offer);
     }
 

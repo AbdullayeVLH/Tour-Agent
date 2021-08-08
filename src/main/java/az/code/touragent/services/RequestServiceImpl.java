@@ -2,15 +2,10 @@ package az.code.touragent.services;
 
 import az.code.touragent.enums.RequestStatus;
 import az.code.touragent.exceptions.AlreadyArchived;
+import az.code.touragent.exceptions.DeleteException;
 import az.code.touragent.exceptions.RequestExpired;
-import az.code.touragent.models.AgentRequests;
-import az.code.touragent.models.Archive;
-import az.code.touragent.models.Request;
-import az.code.touragent.models.User;
-import az.code.touragent.repositories.AgentRequestsRepository;
-import az.code.touragent.repositories.ArchiveRepository;
-import az.code.touragent.repositories.RequestRepository;
-import az.code.touragent.repositories.UserRepository;
+import az.code.touragent.models.*;
+import az.code.touragent.repositories.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,7 +79,7 @@ public class RequestServiceImpl implements RequestService {
             agentRequestsRepo.save(agentRequest);
             return "Request is deleted";
         }
-        return null;
+        throw new DeleteException();
     }
 
     @Override
@@ -119,9 +114,7 @@ public class RequestServiceImpl implements RequestService {
     public List<Request> getArchiveRequests(String email) {
         List<Archive> archives = archiveRepo.getArchivesByUserEmail(email);
         List<Request> archiveRequests = new ArrayList<>();
-        archives.forEach(archive -> {
-            archiveRequests.add(requestRepo.getById(archive.getRequestId()));
-        });
+        archives.forEach(archive -> archiveRequests.add(requestRepo.getById(archive.getRequestId())));
         return archiveRequests;
     }
 }
