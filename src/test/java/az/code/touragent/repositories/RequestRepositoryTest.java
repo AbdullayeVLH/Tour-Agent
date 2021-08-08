@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -59,7 +60,7 @@ class RequestRepositoryTest {
                 .status(RequestStatus.UNSEEN).build();
         requestRepo.save(firstTestRequest);
 
-        Request result = requestRepo.getRequestByChatId(1L);
+        Optional<Request> result = requestRepo.getRequestByChatId(1L);
 
         assertThat(result).isEqualTo(firstTestRequest);
 

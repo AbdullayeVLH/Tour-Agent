@@ -22,16 +22,14 @@ public class AcceptedQueueListener {
 
     @RabbitListener(queues = RabbitMQConfig.ACCEPTED_QUEUE)
     public void stopRequestListener(Accepted acceptedOffer) {
-        if (acceptedOffer != null) {
-            Accepted accepted = Accepted.builder()
-                    .requestId(acceptedOffer.getRequestId())
-                    .agentEmail(acceptedOffer.getAgentEmail())
-                    .contactInfo(acceptedOffer.getContactInfo())
-                    .build();
-            acceptedRepo.save(accepted);
-            AgentRequests acceptedRequest = agentRequestsRepo.getAgentRequestsByRequestIdAndUserEmail(acceptedOffer.getRequestId(), acceptedOffer.getAgentEmail());
-            acceptedRequest.setStatus(RequestStatus.ACCEPTED);
-            agentRequestsRepo.save(acceptedRequest);
-        }
+        Accepted accepted = Accepted.builder()
+                .requestId(acceptedOffer.getRequestId())
+                .agentEmail(acceptedOffer.getAgentEmail())
+                .contactInfo(acceptedOffer.getContactInfo())
+                .build();
+        acceptedRepo.save(accepted);
+        AgentRequests acceptedRequest = agentRequestsRepo.getAgentRequestsByRequestIdAndUserEmail(acceptedOffer.getRequestId(), acceptedOffer.getAgentEmail());
+        acceptedRequest.setStatus(RequestStatus.ACCEPTED);
+        agentRequestsRepo.save(acceptedRequest);
     }
 }

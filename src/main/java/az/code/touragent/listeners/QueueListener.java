@@ -26,7 +26,6 @@ public class QueueListener {
 
     @RabbitListener(queues = RabbitMQConfig.QUEUE)
     public void requestListener(Session session) {
-        if (session != null) {
             Request request = Request.builder()
                     .requestId(session.getSessionId())
                     .chatId(session.getChatId())
@@ -36,7 +35,6 @@ public class QueueListener {
                     .status(RequestStatus.LISTENED)
                     .build();
             requestRepo.save(request);
-        }
         requestService.makeAgentRequests();
     }
 }

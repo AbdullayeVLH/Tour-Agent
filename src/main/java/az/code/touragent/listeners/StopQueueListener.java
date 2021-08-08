@@ -13,6 +13,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class StopQueueListener {
@@ -29,12 +30,12 @@ public class StopQueueListener {
 
     @RabbitListener(queues = RabbitMQConfig.STOP_QUEUE)
     public void stopRequestListener(Session session) {
-        if (session!=null) {
-            Request stopRequest = requestRepo.getRequestByChatId(session.getChatId());
-            stopRequest.setExpired(true);
-            stopRequest.setStatus(RequestStatus.DELETED);
-            requestRepo.save(stopRequest);
-            List<AgentRequests> agentRequests = agentRequestsRepo.getAgentRequestsByRequestId(stopRequest.getRequestId());
+        Optional<Request> stopRequest = requestRepo.getRequestByChatId(session.getChatId());
+        if (stopRequest.isPresent()) {
+            stopRequest.get().setExpired(true);
+            stopRequest.get().setStatus(RequestStatus.DELETED);
+            requestRepo.save(stopRequest.get());
+            List<AgentRequests> agentRequests = agentRequestsRepo.getAgentRequestsByRequestId(stopRequest.get().getRequestId());
             agentRequests.forEach(agentRequest -> agentRequest.setStatus(RequestStatus.DELETED));
             agentRequestsRepo.saveAll(agentRequests);
         }

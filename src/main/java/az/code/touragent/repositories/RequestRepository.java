@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface RequestRepository extends JpaRepository<Request, UUID> {
@@ -17,5 +18,5 @@ public interface RequestRepository extends JpaRepository<Request, UUID> {
     @Query("SELECT request FROM Request request " +
             "WHERE request.expired=false " +
             "AND request.chatId=:chatId")
-    Request getRequestByChatId(Long chatId);
+    Optional<Request> getRequestByChatId(Long chatId);
 }

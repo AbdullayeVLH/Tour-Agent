@@ -4,6 +4,7 @@ package az.code.touragent.models;
 import lombok.*;
 import org.hibernate.annotations.Proxy;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.UUID;
