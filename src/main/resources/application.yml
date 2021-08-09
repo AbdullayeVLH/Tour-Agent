@@ -1,9 +1,0 @@
-spring.mail:
-  host: smtp.gmail.com
-  port: 587
-  username: tour.agent.api@gmail.com
-  password: touragentapi1996
-  properties.mail.smtp.auth: true
-  properties.mail.smtp.starttls.enable: true
-  properties.mail.properties.mail.transport.protocol: smtp
-  properties.mail.debug: true
