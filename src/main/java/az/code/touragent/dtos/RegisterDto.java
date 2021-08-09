@@ -28,6 +28,6 @@ public class RegisterDto {
     @Size(min = 10, max =10, message = "Voen must be 10 character long")
     private String voen;
     @NotNull
-    @Size(min = 8, message = "Username must be at least 8 character long")
+    @Size(min = 8, message = "Password must be at least 8 character long")
     private String password;
 }
