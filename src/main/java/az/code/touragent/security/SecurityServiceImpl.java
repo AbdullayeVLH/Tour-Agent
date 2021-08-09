@@ -98,8 +98,6 @@ public class SecurityServiceImpl implements SecurityService {
             AccessTokenResponse response =
                     authzClient.obtainAccessToken(user.getEmail(), user.getPassword());
             return response;
-//            Util.convertToken(response.getToken());
-//            return LoginResponseDto.builder().token(response.getToken()).build();
         } catch (HttpResponseException e) {
             throw new LoginException();
         }
@@ -108,13 +106,13 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public RegisterResponseDto register(RegisterDto register) {
         Keycloak keycloak = getRealmCli();
-//         keycloakClient.realm(realm);
         UserRepresentation user = createUser(register);
         RealmResource realmResource = keycloak.realm(realm);
         UsersResource usersResource = realmResource.users();
         Response response = usersResource.create(user);
         if (response.getStatus() == 201) {
-            UserResource userResource = changeTemporaryPassword(register, usersResource, response);
+            String userId = CreatedResponseUtil.getCreatedId(response);
+            UserResource userResource = usersResource.get(userId);
             RoleRepresentation realmRoleUser = realmResource.roles().get(role).toRepresentation();
             userResource.roles().realmLevel().add(Collections.singletonList(realmRoleUser));
             System.out.println("girmedi");
