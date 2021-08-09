@@ -112,18 +112,15 @@ public class SecurityServiceImpl implements SecurityService {
         UserRepresentation user = createUser(register);
         RealmResource realmResource = keycloak.realm(realm);
         UsersResource usersResource = realmResource.users();
-        System.out.println("agzima gelen");
         Response response = usersResource.create(user);
-        System.out.println(response.getStatus());
-        System.out.println("kecdi");
         if (response.getStatus() == 201) {
             UserResource userResource = changeTemporaryPassword(register, usersResource, response);
             RoleRepresentation realmRoleUser = realmResource.roles().get(role).toRepresentation();
             userResource.roles().realmLevel().add(Collections.singletonList(realmRoleUser));
+            System.out.println("girmedi");
             sendVerificationEmail(register);
         }
         keycloak.tokenManager().getAccessToken();
-        System.out.println("bitdi");
         return RegisterResponseDto.builder().message(response.getStatusInfo().toString()).build();
     }
 
@@ -177,13 +174,17 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     private void sendVerificationEmail(RegisterDto register) {
+        System.out.println("baslangic");
         String token = UUID.randomUUID().toString();
         userRepo.save(new User(register));
+        System.out.println("save");
         verificationRepo.save(Verification.builder()
                 .token(token)
                 .userEmail(User.builder().email(register.getEmail()).build()).build());
+        System.out.println("buda verf");
         mailUtil.sendNotificationEmail(register.getEmail(), verificationSubject,
                 verificationContext.formatted(verificationUrl.formatted(token, register.getEmail())));
+        System.out.println("en son");
     }
 
 
