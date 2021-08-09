@@ -64,26 +64,12 @@ public class SecurityServiceImpl implements SecurityService {
     VerificationRepository verificationRepo;
     UserRepository userRepo;
 
-//    private final Keycloak keycloakClient;
-
-//    @Bean
-//    public Keycloak keycloakClient(){
-//        return KeycloakBuilder.builder()
-//                .serverUrl(authServerUrl)
-//                .realm(realm)
-//                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-//                .clientId(clientId)
-//                .clientSecret(clientSecret)
-//                .build();
-//    }
-
     public SecurityServiceImpl(MailUtil mailUtil,
                                VerificationRepository verificationRepo,
                                UserRepository userRepo) {
         this.mailUtil = mailUtil;
         this.verificationRepo = verificationRepo;
         this.userRepo = userRepo;
-//        this.keycloakClient = keycloakClient;
     }
 
     @Override
@@ -115,7 +101,6 @@ public class SecurityServiceImpl implements SecurityService {
             UserResource userResource = usersResource.get(userId);
             RoleRepresentation realmRoleUser = realmResource.roles().get(role).toRepresentation();
             userResource.roles().realmLevel().add(Collections.singletonList(realmRoleUser));
-            System.out.println("girmedi");
             sendVerificationEmail(register);
         }
         keycloak.tokenManager().getAccessToken();
@@ -172,17 +157,13 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     private void sendVerificationEmail(RegisterDto register) {
-        System.out.println("baslangic");
         String token = UUID.randomUUID().toString();
         userRepo.save(new User(register));
-        System.out.println("save");
         verificationRepo.save(Verification.builder()
                 .token(token)
                 .userEmail(User.builder().email(register.getEmail()).build()).build());
-        System.out.println("buda verf");
         mailUtil.sendNotificationEmail(register.getEmail(), verificationSubject,
                 verificationContext.formatted(verificationUrl.formatted(token, register.getEmail())));
-        System.out.println("en son");
     }
 
 
