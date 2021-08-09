@@ -112,7 +112,10 @@ public class SecurityServiceImpl implements SecurityService {
         UserRepresentation user = createUser(register);
         RealmResource realmResource = keycloak.realm(realm);
         UsersResource usersResource = realmResource.users();
+        System.out.println("agzima gelen");
         Response response = usersResource.create(user);
+        System.out.println(response.getStatus());
+        System.out.println("kecdi");
         if (response.getStatus() == 201) {
             UserResource userResource = changeTemporaryPassword(register, usersResource, response);
             RoleRepresentation realmRoleUser = realmResource.roles().get(role).toRepresentation();
@@ -120,6 +123,7 @@ public class SecurityServiceImpl implements SecurityService {
             sendVerificationEmail(register);
         }
         keycloak.tokenManager().getAccessToken();
+        System.out.println("bitdi");
         return RegisterResponseDto.builder().message(response.getStatusInfo().toString()).build();
     }
 
