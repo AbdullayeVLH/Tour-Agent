@@ -97,8 +97,7 @@ public class SecurityServiceImpl implements SecurityService {
         UsersResource usersResource = realmResource.users();
         Response response = usersResource.create(user);
         if (response.getStatus() == 201) {
-            String userId = CreatedResponseUtil.getCreatedId(response);
-            UserResource userResource = usersResource.get(userId);
+            UserResource userResource = changeTemporaryPassword(register, usersResource, response);
             RoleRepresentation realmRoleUser = realmResource.roles().get(role).toRepresentation();
             userResource.roles().realmLevel().add(Collections.singletonList(realmRoleUser));
             sendVerificationEmail(register);
